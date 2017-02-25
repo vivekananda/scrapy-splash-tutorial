@@ -1,25 +1,16 @@
 # Installation
 
-
-code
-
-    docker pull aciobanu/scrapy
+    docker pull vivekananda/scrapy
     docker pull scrapinghub/splash
 
-    docker run -v $(pwd):/runtime/app aciobanu/scrapy startproject fara
-    docker run -p 5023:5023 -p 8050:8050 -p 8051:8051 scrapinghub/splash
     docker run -p 8050:8050 -p 8051:8051 scrapinghub/splash
+# To run the scraper
+  * Update SLASH_URL = 'http://192.168.43.145:8050' with apapropriate ip where the splash docker image is running
+    * Remember not to give localhost as localhost in a docker contest is different for different docker images
+    * Please give the ip of the machine on which splash docker image is running
+    * You can check that by opening SLASH_URL in the browser 
+  * docker run -v $(pwd):/runtime/app vivekananda/scrapy-splash crawl faraspider -o fara_items.json
     
-    docker run -v $(pwd):/runtime/app vivekananda/scrapy-splash crawl faraspider
-    docker run -v $(pwd):/runtime/app vivekananda/scrapy-splash crawl faraspider -o temp.csv
-    
-    
-
-$ virtualenv env
-$ source env/bin/activate
-$ pip install -r requirements.txt
-
-
 
 ## Important links
 

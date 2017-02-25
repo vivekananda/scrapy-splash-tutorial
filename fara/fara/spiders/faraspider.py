@@ -6,7 +6,7 @@ from fara.items import FaraItem
 import datetime
 
 from scrapy_splash import SplashRequest
-from fara.settings import SPLASH_REQUEST_ENDPOINT
+from fara.settings import SPLASH_REQUEST_ENDPOINT, SCRAPY_REQUEST_ENDPOINT
 
 
 class FaraSpider(scrapy.Spider):
@@ -14,11 +14,7 @@ class FaraSpider(scrapy.Spider):
     allowed_domains = ["www.fara.gov"]
     start_urls = ["https://efile.fara.gov/pls/apex/f?p=171:130:0::NO:RP,130:P130_DATERANGE:N"]
 
-    # allowed_domains  = [ "www.deal70.com" ]
-    # start_urls = [ "http://www.deal70.com" ]
-
-    def start_requests(self):
-        script = """
+    script = """
 function main(splash)
   local url = splash.args.url
   assert(splash:go(url))
@@ -33,34 +29,39 @@ function main(splash)
   }
 end
         """
-        for url in self.start_urls:
-            for i in range(1, 20, 15):  # 513
 
-                lauscript = script % (i,)
-                print(lauscript)
+    def start_requests(self):
+        for url in self.start_urls:
+            for i in range(1, 10, 15):
+                lauscript = self.script % (i,)
                 yield SplashRequest(url, self.parse,
-                                    endpoint='http://192.168.43.145:8050/execute',
+                                    endpoint=SPLASH_REQUEST_ENDPOINT,
                                     args={'lua_source': lauscript},
                                     )
-        """
-        yield scrapy.Request(url, self.parse, meta={
-                'splash': {
-                    'endpoint': 'http://192.168.43.145:8050/render.html',
-                    'args': {'renderall': 1, 'iframes': 1, 'script': 1, 'timeout': 60, 'lua_source': script}
-                }
-            })
-        #"""
 
     def parse(self, response):
+
         sel = Selector(response=response)
+
+        pagination_data = sel.xpath('//td[@class="pagination"]/span[@class="fielddata"]//text()').extract()
+        if pagination_data:
+            tokens = (" ".join([p.strip() for p in pagination_data])).split()
+            if int(tokens[0].strip()) == 1 and len(tokens) >= 5:
+                total_recods = int(tokens[4].strip())
+
+                for i in range(16, total_recods + 1, 15):  # 513
+                    lauscript = self.script % (i,)
+                    yield SplashRequest(response.url, self.parse,
+                                        endpoint=SPLASH_REQUEST_ENDPOINT,
+                                        args={'lua_source': lauscript},
+                                        dont_filter=True
+                                        )
+
         cur_country = ""
         for node in sel.xpath('//table[@class="apexir_WORKSHEET_DATA"]//tr'):
-            # print "-" * 100
-            # print node
             t_country = node.xpath('.//span[@class="apex_break_headers"]/text()').extract_first()
             if t_country:
                 cur_country = t_country
-                # logger.info()
             if node.xpath('./td//text()').extract():
                 faraitem = FaraItem()
                 faraitem["country"] = cur_country
@@ -77,21 +78,12 @@ end
                 if tdate:
                     faraitem["date"] = datetime.datetime.strptime(tdate, "%m/%d/%Y").isoformat()
                 faraitem["registrant"] = node.xpath('.//td[6]/text()').extract_first()
-                # faraitem["exhibit_url"] = ""  # TODO: go to url and fetch the exhibit url
 
                 new_req = SplashRequest(item_url, self.parse_page2,
-                                        endpoint='http://192.168.43.145:8050/render.html',
+                                        endpoint=SCRAPY_REQUEST_ENDPOINT,
                                         args={},
-                                        dont_filter = True)
-                # request = scrapy.Request(item_url,
-                #                          self.parse_page2,
-                #                          meta={
-                #                              'splash': {
-                #                                  'endpoint': 'http://192.168.43.145:8050/render.html',
-                #                                  'args': {'renderall': 1, 'iframes': 1, 'script': 1, 'timeout': 60}
-                #                              }
-                #                          }
-                #                          )
+                                        dont_filter=True)
+
                 new_req.meta['faraitem'] = faraitem
                 yield new_req
 

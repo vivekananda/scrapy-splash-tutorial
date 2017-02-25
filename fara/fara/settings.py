@@ -19,7 +19,7 @@ NEWSPIDER_MODULE = 'fara.spiders'
 #USER_AGENT = 'fara (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -77,7 +77,7 @@ ROBOTSTXT_OBEY = True
 #AUTOTHROTTLE_MAX_DELAY = 60
 # The average number of requests Scrapy should be sending in parallel to
 # each remote server
-#AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
+AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
 # Enable showing throttling stats for every response received:
 #AUTOTHROTTLE_DEBUG = False
 
@@ -91,6 +91,9 @@ ROBOTSTXT_OBEY = True
 
 # Splash related configurations
 SLASH_URL = 'http://192.168.43.145:8050'
+SCRAPY_REQUEST_ENDPOINT = SLASH_URL + "http://192.168.43.145:8050/render.html"
+SPLASH_REQUEST_ENDPOINT = SLASH_URL + "/execute"
+
 DOWNLOADER_MIDDLEWARES = {
     'scrapy_splash.SplashCookiesMiddleware': 723,
     'scrapy_splash.SplashMiddleware': 725,
@@ -102,7 +105,6 @@ SPIDER_MIDDLEWARES = {
 DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
 HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
 
-ROBOTSTXT_OBEY=False
 HTTPCACHE_ENABLED = False
 #HTTPCACHE_ENABLED = True
 

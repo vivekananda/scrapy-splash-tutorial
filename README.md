@@ -22,14 +22,16 @@ docker run -v $(pwd):/runtime/app vivekananda/scrapy-splash crawl faraspider -o 
 ``` 
 
 ## Important links
-    * [Scrapy image without splash support][docker-scrapy-image]
-    * [Splash Tutorial ][splash-docs]
-    * [Scrapy Tutorial][scrapy-tutorial1]
-    * [Scrapy Tutorial][scrapy-tutorial2]
-    * [Scrapy docs][scrapy-docs]
-    * [Docker docs][docker-docs]
 
+   * [Docker scrapy splash image][docker-scrapy-splash-image]
+   * [Scrapy image without splash support][docker-scrapy-image]
+   * [Splash Tutorial ][splash-docs]
+   * [Scrapy Tutorial][scrapy-tutorial]
+   * [Scrapy Tutorial][scrapy-tutorial2]
+   * [Scrapy docs][scrapy-docs]
+   * [Docker docs][docker-docs]
 
+[docker-scrapy-splash-image]: https://hub.docker.com/r/vivekananda/scrapy-splash/
 [docker-scrapy-image]: https://hub.docker.com/r/aciobanu/scrapy/
 [splash-docs]:  http://splash.readthedocs.io/en/stable/install.html#os-x-docker
 [scrapy-tutorial]: http://jamfie.com/2016/06/06/learning-scrapy-tutorial-javascript-sites/
